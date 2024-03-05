@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Form
 from app.repositories.user_repositorie import UserRepositorie
-from app.schemas.users_schema import UserCreate, UserResponse
-from app.services.authentication import authenticate_user
+from app.schemas.users_schema import UserCreate, UserResponse, UserWithToken
+from app.utils.authentication import authenticate_user
 
 user_route = APIRouter(prefix="/user", tags=["USERS"])
 
@@ -19,9 +19,8 @@ async def getUserbyid(username: str):
     
     return response
 
-@user_route.post("/login", response_model=UserResponse)
-async def login(email = Form(...), password = Form(...)):
+@user_route.post("/login", response_model=UserWithToken)
+async def login(email_form = Form(...), password_form = Form(...)):
     
-    user = authenticate_user(email, password)
-    
+    user = authenticate_user(email_form, password_form)
     return user

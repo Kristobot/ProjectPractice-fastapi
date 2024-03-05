@@ -2,9 +2,9 @@ from database.db import Database
 from app.models.users_table import UserTable
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from pydantic import ValidationError
+from app.schemas.users_schema import UserInDB
 from fastapi import HTTPException, status
-from app.services.security import hashPassword
+from app.utils.security import hashPassword
 
 class UserRepositorie:
     def __init__(self):
@@ -15,7 +15,7 @@ class UserRepositorie:
         return self.session
     
     @staticmethod
-    def createUser(user_data: dict):
+    def createUser(user_data: dict) -> UserInDB:
         
         session = UserRepositorie().getSession
         
@@ -61,16 +61,19 @@ class UserRepositorie:
             session.close()
             
     @staticmethod
-    def getUserByEmail(into_email: str):
+    def getUserByEmail(into_email: str) -> UserInDB:
         
         session = UserRepositorie().getSession
         
         try:
             
-            user = session.query(UserTable).filter_by(email = into_email).first()
+            user: UserInDB = session.query(UserTable).filter_by(email = into_email).first()
+            print(type(user))
             
             if not user:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El Email ingresado no se encuentra registrado o es incorrecto")
+            
+            print(type(user))
             
             return user
         

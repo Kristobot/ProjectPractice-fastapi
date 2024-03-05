@@ -10,3 +10,10 @@ class UserResponse(BaseModel):
     id: int
     username: str
     email: EmailStr
+    
+class UserWithToken(UserResponse):
+    access_token: str
+    type: Optional[str] = "Bearer"
+    
+class UserInDB(UserResponse):
+    password: str
